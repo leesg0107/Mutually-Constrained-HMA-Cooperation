@@ -132,9 +132,27 @@ and the **learned router**, measuring:
 - **Primary metric: wall-clock completion time** = deliberation latency + execution time (report both
   components separately — the deliberation/execution split is the paper's signature plot).
 - Secondary: success rate, sub-goal completion, tokens (for comparability with prior LLM-MR work).
-- **Sweep a difficulty/coupling axis** (e.g., #agents that must co-decide, conflict/congestion
-  density, goal ambiguity) → produce **time-vs-difficulty curves per mode**. The predicted crossing
-  points (L2 wins at low coupling, L0 wins at high coupling, L1 between) are the falsifiable claim.
+- **Sweep a difficulty/coupling axis** → produce **time-vs-difficulty curves per mode**. The
+  predicted crossing points (L2 wins at low coupling, L0 wins at high coupling, L1 between) are the
+  falsifiable claim.
+
+> **⚠️ Critical design insight (from benchmark feasibility study, `benchmark-feasibility.md` §4):**
+> the difficulty axis MUST be one the **learned policy degrades on** — *reasoning/allocation
+> complexity* (task novelty, goal ambiguity, heterogeneous-capability, temporal-ordering), **not
+> pure spatial congestion**. On congestion alone an optimal MAPF/MARL policy wins at all levels and
+> the LLM never wins → **no crossing**. The crossing exists only where a fixed policy fails but
+> reasoning succeeds. State this explicitly to pre-empt "your crossing is a degenerate-axis artifact."
+
+**Benchmark decision (from the feasibility study).** Primary = **PARTNR** (Habitat 3.0): only
+candidate with both an LLM-dialogue arm and a learned arm on the same heterogeneous tasks, and its
+task-type ladder (constraint-free → spatial → temporal → heterogeneous) is a *reasoning-coupling*
+axis — the right instrument for the crossing. Build items: (1) wall-clock instrumentation [low];
+(2) a genuine learned high-level **coordination** arm — PARTNR's only non-LLM coordinator is a
+heuristic planner, so wrap a MAPF/MARL controller as the L2 arm [medium-high, the real cost];
+(3) graded coupling axis [medium]. Fallbacks: **EMOS/Habitat-MAS** (real UAV-UGV drone+ground mix,
+but learned arm unconfirmed) and **RWARE** (clean knobs, trivial timing, but no LLM arm + congestion
+≠ crossing). Wildfire/UAV-UGV outdoor = custom build (Tier-3 demo). No prior work measures
+LLM-vs-learned completion time across difficulty → measurement contribution un-scooped.
 
 **Headline result to aim for:** the router tracks the lower envelope of the per-mode time curves at
 near-zero routing overhead — i.e., difficulty-gated routing beats every fixed single-mode baseline on

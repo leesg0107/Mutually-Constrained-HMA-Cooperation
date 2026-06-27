@@ -10,6 +10,10 @@
 > **Round 2 (2026-06-27, appended in §8):** deep-dive on MARLIN, iTax→mechanism scoop check,
 > and the conceptual-validity question ("is a 'cooperation level' a meaningful construct?").
 > 5 angles, 25 sources, 25 claims verified / 0 killed.
+>
+> **Round 3 (2026-06-27, appended in §9):** resolves the 3 axes round 2 left unverified —
+> metareasoning/VOC (Axis 1, now the theory anchor), skill-based teams (Axis 2), disaster/SAR
+> (Axis 3). 5 angles, 25 sources, 25 verified / 0 killed. **Verdict: publishable, un-scooped.**
 
 ---
 
@@ -323,3 +327,124 @@ These three axes had **no surviving verified claim** — absence is suggestive o
 - Rossano et al. 2025 — arXiv:2509.22469 · Wang et al. 2020 — S0921889020304000
 - Sliding Autonomy — Sellner, Hiatt, Simmons, Singh, RSS 2006 — roboticsproceedings rss02/p03
 - LoA systematic review 2025 — doi:10.1080/10447318.2025.2502978 (+ Miller, "Risks of Discretization")
+
+---
+
+## 9. Round 3 — resolving the 3 unverified axes (metareasoning, skill-based, disaster-response)
+
+> Method: 5 angles, 25 sources, 25 claims 3-vote-verified / 0 killed. Same 403-proxy caveat
+> (Axis-1 grounding rests on verbatim abstracts cross-checked across renderings, not full PDFs).
+> **Updated overall verdict: thesis remains PUBLISHABLE and largely UN-SCOOPED.** Across all
+> three axes the closest prior work is **GROUNDING, not scoop**.
+
+### 9.1 Axis 1 — Metareasoning / deliberation-cost — VERDICT: OPEN, but richly GROUNDED ✅
+
+GarageNet's objective ("only deliberate when it pays off, because LLM latency is the cost") **is
+classical metareasoning / value-of-computation (VOC)**. This is the theoretical backbone the
+framing was missing — a deep, citable lineage:
+
+- **Boddy & Dean (IJCAI-89)** — *deliberation scheduling*: a problem is "time-dependent" when
+  "time spent planning affects the utility of performance"; "deciding what to think about and when
+  to act" = allocating time among anytime procedures. **The canonical deliberate-vs-act formulation.**
+- **Zilberstein (1996)** — anytime algorithms "trade off deliberation time for quality of results."
+- **Hansen & Zilberstein (2001)** — non-myopic meta-level control of *when to stop deliberating and act*.
+- **Lin, Kolobov, Kamar, Horvitz (IJCAI'15)** — metareasoning for MDPs: trade "cost of planning vs.
+  potential policy improvement."
+- **Sezener (2018, arXiv:1811.03035)** — "when to act or compute" as an MDP (computation & action
+  share time/energy).
+- **Modern systems:** Sung & Stone, *Effort Allocation for Deadline-Aware TAMP* (arXiv:2410.05828) —
+  metareasoning to allocate compute under a deadline with uncertain planning/execution times;
+  Paglieri et al., *Learning When to Plan* (arXiv:2509.03581) — learn when to spend test-time compute
+  (always-plan is expensive, never-plan caps performance); IBM, *When to Reason* (arXiv:2510.08731) —
+  semantic router applying reasoning "only when beneficial."
+
+**Every one is SINGLE-AGENT or single-LLM query-routing.** None selects among
+LLM/hybrid/MARL **coordination mechanisms for a robot team** by task difficulty. → Axis 1 is
+**grounding, not scoop.** This is now the recommended theoretical anchor for the whole paper.
+
+### 9.2 Axis 1 sub-finding — the structurally CLOSEST prior work (important nuance)
+
+**Raja & Lesser — meta-level control for multi-agent coordination** (CMU RI; AAMAS journal,
+doi:10.1007/s10458-006-9008-z). A meta-level controller that **selects among multiple
+scheduling/coordination algorithms by situation** in a **resource-bounded multi-agent** setting,
+and explicitly critiques systems that "do not reason about the cost of deliberative computation …
+[and] assume all deliberative computations are always done … in the same way." This is the
+**closest structural match to the GarageNet router that exists** — and predates LLMs.
+
+- **Why it's grounding, not scoop:** it selects *scheduling/negotiation algorithms* to improve
+  one agent's resource-bounded scheduling quality — **not** LLM-vs-hybrid-vs-MARL coordination
+  *mechanisms* for a robot team, **not** gated by task difficulty/coupling, **not** optimizing
+  measured **completion time**. But it is the prior work whose *spirit* is nearest, so cite it
+  prominently and differentiate on (paradigm-spanning mechanisms + difficulty trigger + time objective).
+
+### 9.3 Axis 2 — Skill-library teams + difficulty-driven method selection — VERDICT: OPEN (weak negative)
+
+**No surviving verified claim** of a skill/option-library heterogeneous-team system that selects
+the coordination/planning **METHOD per task BY DIFFICULTY** (vs. merely allocating tasks). The
+difficulty-gated *method-selection* move for skill-based teams appears **un-claimed**.
+⚠️ **Caveat: absence of a verified claim ≠ confirmed absence.** A strong competitor could exist
+undiscovered — flagged for round 4 (esp. "MAPF-only-when-needed" / adaptive coupling gated by
+conflict/congestion density, which is a difficulty proxy).
+
+### 9.4 Axis 3 — Disaster / wildfire / SAR heterogeneous teams — VERDICT: OPEN (weak negative)
+
+**No surviving verified claim** of a wildfire/SAR/disaster heterogeneous (UAV+UGV) system that
+does **difficulty-aware coordination-MODE selection** (deliberate vs. run a learned policy),
+incl. any LLM+MARL/MAPF hybrid for disaster response. The **application space appears open** for
+the wildfire framing. ⚠️ Same weak-negative caveat — confirm in round 4 before claiming it in print.
+
+### 9.5 Most dangerous prior work (cross-cutting, re-confirmed): MARLIN — decisively differentiated
+
+MARLIN (arXiv:2410.14383) is still the sharpest near-scoop (only confirmed LLM-negotiation + MARL
+for a robot team), but round 3 nailed the differentiation: its LLM↔RL switch is **training-time
+only**, a function of **training stage / plan-quality**, *not* per-task difficulty/coupling at
+deployment; evaluated on 5 corridor-traversal variants vs. MAPPO/LLM-only, plotted vs. **training
+episodes** — **no per-mode completion-time-vs-difficulty measurement at inference.** (Correction to
+§8: it's 5 scenario variants, not a "single fixed task.") No 2025–2026 MARLIN follow-on extending
+it to deployment-time/difficulty-gated selection surfaced.
+
+> **Paper-ready differentiation sentence:** *"MARLIN uses the LLM as a training-time scaffold (mode
+> depends on learning progress, measured in episodes-to-performance); GarageNet has no training-stage
+> switch — it is a deployment-time router selecting the coordination mechanism per task by required
+> coupling/difficulty, optimizing measured completion time, and is the first to report per-task
+> completion time for each cooperation mode across a graded difficulty axis."*
+
+### 9.6 Final verdict & sharpest one-sentence framing
+
+**The GarageNet thesis remains publishable and un-scooped.** Recommended framing:
+
+> *"GarageNet brings classical value-of-computation metareasoning to multi-robot teams as a
+> deployment-time router that selects the coordination MECHANISM (LLM deliberation / hybrid /
+> pre-trained MARL-MAPF policy) per task by required coupling, minimizing deliberation+execution
+> time, with the first per-task completion-time measurement per cooperation mode across a difficulty axis."*
+
+Positioning stack: **theory** = metareasoning/VOC (Boddy-Dean, Zilberstein, Hansen, Lin, Sung-Stone,
+Paglieri); **closest structural prior** = Raja-Lesser multi-agent meta-level control (differentiate);
+**closest system prior** = MARLIN (differentiate: train-time vs deploy-time); **conceptual neighbor**
+= Sliding/Adjustable Autonomy (differentiate: human-triggered vs difficulty-triggered);
+**task taxonomy to build the trigger on** = iTax coupling degree.
+
+### 9.7 The crucial design question this surfaces (must answer before/while building)
+
+How does GarageNet **operationalize "required coupling / task difficulty" as a measurable,
+a-priori-computable gating signal**? The whole VOC lineage assumes a value-of-computation estimate.
+GarageNet must specify **what predicts whether LLM deliberation pays off for a given task** — and
+critically, **whether that predictor itself adds latency** that must be folded into the
+deliberation-cost accounting. (A router whose routing decision is itself slow undercuts the thesis.)
+
+### 9.8 Remaining unknowns (optional round 4)
+
+1. **Axis 2 direct verification** — skill/option-library teams selecting *method by difficulty*;
+   "MAPF-only-when-needed" / adaptive coupling gated by conflict density.
+2. **Axis 3 direct verification** — disaster-robotics LLM+learned-policy hybrids 2023–2026.
+3. **MARLIN forward-citation search** — any follow-on pushing it to deployment-time/difficulty gating.
+4. **The gating-signal design** (§9.7) — partly a research-design question, not only a literature one.
+
+### 9.9 Round-3 key sources
+
+- Boddy & Dean, IJCAI-89 (deliberation scheduling) · Zilberstein 1996, AI Magazine 17(3)
+- Hansen & Zilberstein 2001, AIJ (S0004-3702(00)00068-0) · Lin/Kolobov/Kamar/Horvitz, IJCAI'15
+- Sezener 2018 — arXiv:1811.03035 · Sung & Stone 2024 — arXiv:2410.05828
+- Paglieri et al. 2025 (Learning When to Plan) — arXiv:2509.03581 · IBM "When to Reason" — arXiv:2510.08731
+- **Raja & Lesser, multi-agent meta-level control** — doi:10.1007/s10458-006-9008-z (closest structural prior)
+- MARLIN — arXiv:2410.14383 + github.com/SooratiLab/MARLIN

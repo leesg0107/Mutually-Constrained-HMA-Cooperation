@@ -6,6 +6,10 @@
 > Scope caveat: arxiv/OpenReview returned 403 through the proxy during verification, so most
 > claims rest on verbatim abstract quotes + convergent secondary summaries, not full-text reads.
 > Re-run this check close to submission (the 2023–2026 LLM-multi-robot space moves fast).
+>
+> **Round 2 (2026-06-27, appended in §8):** deep-dive on MARLIN, iTax→mechanism scoop check,
+> and the conceptual-validity question ("is a 'cooperation level' a meaningful construct?").
+> 5 angles, 25 sources, 25 claims verified / 0 killed.
 
 ---
 
@@ -186,3 +190,136 @@ grounding and #4 as the cost model that motivates *why a router is needed at all
 - iTax — Korsah, Stentz & Dias 2013, IJRR, doi:10.1177/0278364913496484
 - Gerkey & Matarić MRTA taxonomy (2004)
 - PARTNR benchmark (Habitat 3.0) — arXiv:2411.00081
+
+---
+
+## 8. Round 2 — MARLIN deep-dive, iTax→mechanism scoop check, and conceptual validity
+
+> Method: 5 angles, 25 sources fetched, 25 claims 3-vote-verified / 0 killed. Same 403-proxy
+> caveat (verbatim abstract quotes + secondary corroboration, not full PDF reads).
+
+### 8.1 MARLIN verdict — leaves the GarageNet thesis fully open
+
+MARLIN's RL↔LLM switching is **strictly a TRAINING-time acceleration**: LLM negotiation
+produces plans that guide the MARL policy *during training*, alternating throughout training to
+reach peak performance in fewer episodes. It is **not** a deployment-time router and **not**
+difficulty-gated. The metric is **training-episodes-to-peak** (vs. a MAPPO baseline, eval every
+250 episodes from ep. 100, 10 trials) — **not** per-task completion time or inference latency.
+At deployment a **single** trained policy runs (no LLM, no mode switch). → MARLIN leaves the
+entire GarageNet core thesis (difficulty-gated, **inference-time** mode router measured by
+**completion time**) **open**. *(high confidence; arXiv:2410.14383, survey 2502.03814)*
+
+**Newly surfaced near-neighbors (all favorable — none scoop):**
+- **Yoshida & Sueoka 2025** — *Communication-Free Adaptive Swarm: LLM decision + MARL multi-policy
+  control*. Two-tier (LLM selects a policy via "questionnaire-style prompts"; multiple MARL
+  policies execute). Selection driven by **situational consensus**, not a difficulty metric or
+  completion-time gate. Metric = "implicit consensus" + success/step-count, **not** latency. The
+  closest LLM+MARL architecture, yet difficulty-gating and the deliberation-cost objective remain open.
+- **Prompting Robot Teams with NL** (arXiv:2509.24575) — LLM decomposes intent→DFA **offline**,
+  distilled into RNN+GNN; **no LLM at inference**, no mode switch.
+- **LAN2CB** (arXiv:2507.16068) — NL→Python codegen pipeline; no RL/MARL/MAPF, no router.
+
+### 8.2 iTax → coordination-mechanism mapping — scoop verdict: does NOT exist (gap confirmed)
+
+iTax (Korsah, Stentz & Dias 2013) is a **descriptive** classification of MRTA *problems* by
+**degree of interdependence** of agent-task utilities/constraints (ND / ID / XD / CD), mapped to
+combinatorial-optimization models. It is **not** a prescription of which coordination *mechanism*
+to use, and its axis is utility/cost interdependence — **not** task difficulty as a trigger for
+selecting a decision-making *mode*.
+
+**No work maps coupling/interdependence DEGREE → a CHOICE of coordination MECHANISM.** Closest:
+- **Schneider, Sklar & Parsons (TAROS 2017)** — genuinely auto-selects a task-allocation
+  mechanism from a **portfolio** via a trained classifier (real precursor to the meta-selection
+  idea), **but** the signal is **spatial/environmental geometry** (task-location clusters, robot
+  positions), not coupling/difficulty, and the portfolio is **two variants of the same auction
+  family** (SSI vs. PSI) — not different reasoning paradigms (LLM vs. MARL vs. reactive).
+- **Rossano et al. 2025** (arXiv:2509.22469) and **Wang et al. 2020** (the iTax CD[ST-MR-TA] case)
+  each handle coupling with a **single** mechanism — they don't select among mechanisms by coupling.
+→ **The coupling-degree→mechanism mapping is open** — this is a real opening for grounding L0–L2,
+  but it must be *built*, not cited. *(high confidence)*
+
+### 8.3 Conceptual validity — IS "cooperation level" a meaningful construct? (the deep question)
+
+**Answer: the underlying idea is real and empirically validated — but the DISCRETE-LEVEL packaging
+is contested, so the defensible novelty is the TRIGGER + OBJECTIVE, not the levels themselves.**
+
+- **VALIDATED:** "Vary the coordination/autonomy level by situation" is an established, empirically
+  validated construct. **Sliding Autonomy** (Sellner, Hiatt, Simmons, Singh — RSS 2006) is a
+  shared-control spectrum (full autonomy ↔ teleoperation) for coordinated multi-robot assembly;
+  the *when-to-switch* decision is driven by agents **modeling expected performance**
+  (cost/benefit), and it was operationalized as a **small discrete set of modes** (4 strategies).
+  Result: efficiency near full autonomy + restored reliability + lower operator workload. → The
+  "adjust coordination level by situation, as a few discrete modes" pattern is proven to work.
+- **CONTESTED:** Discretizing autonomy into **fixed levels** is recognized but **not settled**. A
+  2025 systematic review finds the Levels-of-Automation literature "contains numerous seemingly
+  contradictory critiques and recommendations"; the Kaber-2018 / Sheridan / Endsley / Miller
+  exchange (Miller, *"The Risks of Discretization"*) shows fixed levels are useful as concepts but
+  contested for engineering use.
+- **IMPLICATION for L0–L2:** You **cannot** present a fixed L0/L1/L2 ladder as self-evidently
+  valid. Its defensibility rests on **(i) the difficulty-gating trigger** (all-robot,
+  task-difficulty-driven — vs. sliding autonomy's human-in-the-loop, performance/operator trigger)
+  and **(ii) the per-task-completion-time / deliberation-cost objective**. You must explicitly
+  address the **discrete-vs-continuous** critique (why 3 modes, not a continuum?).
+
+**Four constructs GarageNet MUST differentiate itself from (one-liners):**
+1. **Adjustable / Sliding Autonomy** (Sellner/Simmons 2006; Scerri/Tambe) — *human-in-the-loop*
+   autonomy spectrum triggered by *performance/operator cost*. GarageNet: *all-robot*, triggered by
+   *task difficulty/coupling*, spanning *reasoning paradigms* (LLM vs. learned policy).
+2. **Levels of Automation** (Sheridan-Verplank; Parasuraman-Sheridan-Wickens 2000) — a descriptive
+   *who-does-what* autonomy scale (and a contested one). GarageNet: not "how autonomous" but
+   "*which coordination mechanism*," chosen for time.
+3. **Mechanism-portfolio selection** (Schneider 2017) — selects an allocation mechanism by *spatial
+   geometry*, within *one* (auction) family. GarageNet: selects across *paradigms* by *difficulty*.
+4. **iTax coupling taxonomy** (Korsah 2013) — *describes* problems by interdependence. GarageNet:
+   *prescribes* a mechanism from the coupling degree.
+
+### 8.4 Updated GAP statement & single sharpest paper framing
+
+**Gap (sharpened):** No system performs **deployment/inference-time selection of the coordination
+*mechanism* (LLM deliberation ↔ hybrid ↔ pre-trained MARL/MAPF policy) as a function of task
+difficulty/coupling, with the explicit objective of minimizing deliberation+execution time**
+(treating LLM inference latency as the cost of deliberation), and *measures per-task completion
+time per mode*. MARLIN is train-time; sliding autonomy is human-triggered/performance-based;
+mechanism-portfolio work uses spatial signals within one family; iTax only describes.
+
+**Sharpest single-paper framing:** *"A metareasoning router for heterogeneous multi-robot teams
+that, per task, decides whether deliberation is worth its latency — selecting LLM discussion vs. a
+pre-trained MARL/MAPF policy vs. hybrid by task difficulty/coupling — and the first empirical
+characterization of completion time per cooperation mode across a difficulty axis."* Frame the
+contribution as the **trigger + objective + measurement**, with L0–L2 as an *operationalization*,
+not the headline claim. Ground the trigger in iTax coupling; ground the objective in **metareasoning
+/ bounded rationality** (Russell & Wefald — "is it worth thinking more?").
+
+### 8.5 Updated reviewer-risk list
+
+- **R1 (MARLIN)** — *defused*: train-time vs. inference-time, episodes vs. completion-time.
+- **R2 (Sliding/Adjustable Autonomy) — NEW, now the top conceptual risk.** "You've reinvented
+  adjustable autonomy." Rebuttal: human-out-of-loop, *task-difficulty* (not performance/operator)
+  trigger, spanning *reasoning paradigms*, optimizing *deliberation latency*.
+- **R3 (LoA discretization)** — "Why discrete levels?" Must address discrete-vs-continuous head-on.
+- **R4 (Yoshida & Sueoka swarm)** — "LLM-selects + MARL-executes already exists." Rebuttal: theirs
+  is *consensus*-driven, not difficulty-gated, and not latency/time-optimized.
+- **R5 (mechanism-portfolio, Schneider)** — "Auto-selecting a coordination mechanism is done."
+  Rebuttal: spatial signal + single auction family vs. difficulty signal + cross-paradigm.
+
+### 8.6 Still-open (NOT verified in round 2 — candidates for round 3)
+
+These three axes had **no surviving verified claim** — absence is suggestive of a gap, not a proof:
+1. **Metareasoning for multi-robot mode-selection** (Russell & Wefald bounded rationality; anytime;
+   "learn when to plan" for LLM agents) applied to *multi-robot coordination-mode* choice — both
+   the theoretical grounding for the objective **and** a potential scoop. **Highest-value next check.**
+2. **Skill-library heterogeneous teams** selecting method (MAPF vs. MARL vs. simple skill vs.
+   negotiation) **per task by difficulty** — "when is MAPF needed vs. simple path following?"
+3. **Disaster-response / wildfire / SAR** heterogeneous (drones + ground) systems doing
+   capability-based roles **and** difficulty-aware mode selection (esp. LLM+MARL hybrid).
+
+### 8.7 Round-2 key sources
+
+- MARLIN — arXiv:2410.14383 · LLM-MRS survey — arXiv:2502.03814
+- Yoshida & Sueoka 2025 (Comm-Free Adaptive Swarm, LLM+MARL) — ResearchGate 398910704
+- Prompting Robot Teams with NL — arXiv:2509.24575 · LAN2CB — arXiv:2507.16068
+- iTax — Korsah, Stentz & Dias 2013, doi:10.1177/0278364913496484
+- Schneider, Sklar & Parsons, TAROS 2017 — doi:10.1007/978-3-319-64107-2_33
+- Rossano et al. 2025 — arXiv:2509.22469 · Wang et al. 2020 — S0921889020304000
+- Sliding Autonomy — Sellner, Hiatt, Simmons, Singh, RSS 2006 — roboticsproceedings rss02/p03
+- LoA systematic review 2025 — doi:10.1080/10447318.2025.2502978 (+ Miller, "Risks of Discretization")

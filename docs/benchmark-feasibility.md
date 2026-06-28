@@ -66,14 +66,40 @@ scratch. ⚠️ See §4 — pure congestion may not produce a crossing.
 
 1. **Wall-clock instrumentation** — wrap LLM planning calls and skill execution; log
    deliberation-latency vs execution-time per task. **Low (days).**
-2. **Genuine learned high-level COORDINATION arm (the real cost)** — PARTNR's non-LLM coordinator is
-   only a heuristic planner. To make the "L2 = pre-trained MARL/MAPF policy" arm real, wrap a
-   MAPF/MARL high-level controller (or distill a policy) as a drop-in alternative to the LLM planner
-   on the same tasks. **Medium-High (weeks).** *(Open question: does Habitat 3.0 admit this cleanly,
-   or is the heuristic planner the only non-LLM coordinator? — verify early.)*
+2. **Genuine learned high-level COORDINATION arm (the real cost)** — wrap a MAPF/MARL high-level
+   controller (or distill a policy) as a drop-in alternative to the LLM planner on the same tasks.
+   ✅ **VERIFIED feasible as a WRAPPER (not from-scratch) — see §3a.** The remaining cost is
+   *producing* the policy (train MARL / wire a MAPF solver to emit skill assignments), which is
+   standard; the PARTNR integration is a single `Planner` subclass. **Medium (weeks).**
 3. **Graded coupling axis** — turn discrete task types into a monotonic difficulty sweep
    (shared-resource contention, # co-decision agents, goal ambiguity, temporal-ordering depth).
    **Medium (weeks).**
+
+## 3a. ✅ Source verification — the L2 learned-coordination arm is a WRAPPER (de-risked)
+
+Read of PARTNR source (`facebookresearch/partnr-planner`, main) resolves the make-or-break unknown:
+
+- **`habitat_llm/planner/planner.py` defines a clean `Planner` base class.** A subclass implements
+  only two methods:
+  ```python
+  def get_next_action(self, instruction: str, observations: Dict, world_graph: Dict[int, "WorldGraph"])
+        -> Tuple[Dict[int, Any], Dict[str, Any], bool]:   # -> (per-agent low-level actions, info, done)
+  def reset(self) -> None
+  ```
+- **Planning is explicitly decoupled from execution.** The base provides `process_high_level_actions`
+  that translates **high-level skill assignments → low-level commands**. So a coordinator only needs
+  to emit *which skill each agent runs next*; PARTNR handles the motor execution.
+- **Non-LLM planners ALREADY implement this interface** — the planner dir ships
+  `scripted_centralized_planner.py` and `random_rearrange_planner.py` (alongside `llm_planner.py`,
+  `centralized_llm_planner.py`, `zero_shot_react_planner.py`, `thoughtless_llm_planner.py`, `rag.py`).
+  These are the **templates to copy** for an L2 controller.
+
+**Verdict:** the L2 arm (MAPF/MARL high-level coordination) is a **drop-in `Planner` subclass**
+reusing `process_high_level_actions` — a wrapper job, **not** a from-scratch sim integration. The
+L0 (LLM dialogue) and L1 (hybrid) arms already exist as planner variants. **Wall-clock timing**
+goes in the eval loop: time `get_next_action` (deliberation) vs. skill-execution steps separately.
+This materially de-risks the project's biggest engineering unknown. *(Source: WebFetch of the
+public repo README + `planner/` directory + `planner.py`, 2026-06-27.)*
 
 ## 4. ⚠️ Critical design insight — the difficulty axis must be one the LEARNED policy degrades on
 
@@ -108,8 +134,8 @@ an artifact of a degenerate difficulty axis."
 
 ## 6. Open items to verify before committing
 
-- Does PARTNR/Habitat 3.0 admit a learned high-level coordination policy as a drop-in for the LLM
-  planner, or is the heuristic planner the only non-LLM coordinator? (Decides effort item §3.2.)
+- ✅ **RESOLVED (§3a):** PARTNR admits a learned high-level coordination policy as a drop-in
+  `Planner` subclass — the L2 arm is a wrapper, not a from-scratch build.
 - Is the LLM-vs-learned **crossing observable** at realistic agent counts given Habitat sim speed?
 - Can a clean monotonic coupling knob be engineered on PARTNR's discrete types?
 - Does EMOS expose a runnable learned/PPO arm on the same tasks (refuted-but-not-disproven)? If yes,

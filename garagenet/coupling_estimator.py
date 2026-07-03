@@ -197,15 +197,26 @@ class ProbeGate:
 @dataclass
 class FallbackGate:
     """Rule first; pay the probe's latency ONLY when the rules are not
-    confident (no marker fired). The gate applies the paper's own thesis to
-    itself: deliberate (probe) only where it pays.
+    confident. The gate applies the paper's own thesis to itself: deliberate
+    (probe) only where it pays.
 
-    Caveat by construction: marker-free text is indistinguishable from a
-    genuine ND task, so ND tasks also trigger the probe — the fallback's
-    canonical-set overhead is exactly the ND fraction times the probe latency.
+    Two fallback triggers:
+      1. NO marker fired (marker-free text is indistinguishable from ND);
+      2. decision-margin (optional): the rule's chi lands within
+         `decision_margin` of the deliberate/execute boundary
+         `decision_threshold` (= chi*), where a small estimation error flips
+         the mode. Discovered failure mode motivating this: an INCIDENTAL
+         marker hit ("move it first" = priority, not sequence) yields a
+         confident-but-wrong classification the marker-count heuristic cannot
+         catch; near-boundary estimates are exactly where that matters.
+
+    Caveat by construction: ND tasks also trigger fallback #1, so the
+    canonical-set overhead is at least the ND fraction times probe latency.
     """
 
     probe: ProbeGate = field(default_factory=ProbeGate)
+    decision_threshold: Optional[float] = None  # chi*; enables trigger #2
+    decision_margin: float = 0.0
     name: str = "fallback-gate"
     _rule: RuleGate = field(default_factory=RuleGate)
 
@@ -214,7 +225,12 @@ class FallbackGate:
         counts = _count_markers(task.text)
         if any(counts.values()):
             chi = BUCKETS[self._rule.classify(task)]
-            return chi, time.perf_counter() - t0
+            near_boundary = (
+                self.decision_threshold is not None
+                and abs(chi - self.decision_threshold) < self.decision_margin
+            )
+            if not near_boundary:
+                return chi, time.perf_counter() - t0
         chi, probe_latency = self.probe.estimate(task)
         return chi, (time.perf_counter() - t0) + probe_latency
 

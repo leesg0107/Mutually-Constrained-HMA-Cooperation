@@ -87,3 +87,15 @@ The system claim, precisely phrased: **"robots in one team are simultaneously as
 cooperation mechanisms (immediate MARL execution ↔ LLM deliberation) according to the coupling
 their subtask demands, and that assignment minimizes total mission completion time."** Phase 0's
 crossing is the phenomenon that makes this claim possible; Phase 1 is the claim itself.
+
+---
+
+## Scope decision (2026-07-03): no world model in the paper's loop
+
+The paper does NOT require a learned world model. The pipeline's inputs are the mission spec
+(branch descriptions, precedence/externality structure, team composition) plus **inter-robot
+information sharing** (each robot's estimates and plans visible to the gate/allocator when
+escalated). A persistent world model / memory / fine-tuned robot-dialogue LLM belongs to the
+GarageNet *platform roadmap* (follow-up work: they shrink deliberation latency and widen L0's
+viable region), not to this paper's claims. Implemented accordingly: `garagenet/pipeline.py`
+consumes descriptions + structure only.

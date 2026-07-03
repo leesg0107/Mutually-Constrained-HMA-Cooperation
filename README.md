@@ -34,13 +34,14 @@ garagenet/allocators.py      Phase-1: team-uniform / greedy-local / joint-oracle
 garagenet/allocator_sweep.py Phase-1 experiment: allocators x externality sweep
 garagenet/coupling_estimator.py  gating signal: rule / learned / LLM-probe / fallback gates
 garagenet/estimator_eval.py  gating ablation: accuracy x latency x mis-routing cost
+garagenet/pipeline.py        end-to-end: NL descriptions -> estimate -> gate -> allocate -> execute
 ```
 
 Quickstart:
 
 ```bash
 pip install -e ".[dev]"
-pytest                                      # 29 tests
+pytest                                      # 35 tests
 python -m garagenet.sweep --axis coupling   --out results/
 python -m garagenet.sweep --axis congestion --out results/
 python -m garagenet.plots results/sweep_coupling.csv results/sweep_congestion.csv \

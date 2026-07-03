@@ -273,3 +273,24 @@ a downstream chain). PARTNR missions for Phase 1 must be selected/composed accor
 7. Discussion — when mixing pays (precedence) and when it can't (independent parallel); routing
    overhead regime; discrete-vs-continuous (κ as future work if Phase-2 knob unbuilt).
 8. Conclusion & Limitations.
+
+### v2 addendum (2026-07-03): gating-signal findings from the executable prototype
+
+The gating ablation (`garagenet/estimator_eval.py`, `pipeline.py`) produced two results that
+upgrade Figure 4b from a plan to a demonstrated mechanism:
+
+1. **The gate winner is condition-dependent — and we can show it.** On in-vocabulary task text the
+   zero-latency rule gate is perfect *(circular — it is evaluated on its own lexicon)*; on held-out
+   paraphrases it collapses (20% bucket accuracy, 13.3s/task mis-routing regret) while a 2.5s LLM
+   probe stays ~95% and wins on total overhead. The "cheap gate beats the probe" claim is therefore
+   scoped, not universal — pre-empting the obvious reviewer counterexample.
+2. **Confidence must be decision-margin-based, not marker-based.** A discovered failure mode: an
+   incidental lexical hit ("move it FIRST" — priority, not sequence) makes the rule confidently
+   wrong just below chi*, and a naive rule-then-probe fallback inherits the mistake. The fix —
+   probe when the estimate lands within a margin of the decision boundary chi* — recovers
+   probe-level allocations while staying near-zero-latency away from the boundary
+   (wildfire-NL demo: 154.3s rule / 156.9s naive-fallback / 113.0s margin-fallback = probe).
+   This is the paper's VoC thesis applied to the gate itself, with an executable witness.
+
+Scope decision recorded: **no world model in the paper's loop** — mission spec + inter-robot
+information sharing suffice; world model/memory/fine-tuned dialogue LLMs are platform roadmap.

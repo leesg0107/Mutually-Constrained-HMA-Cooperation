@@ -29,6 +29,9 @@ garagenet/envs/mock.py       synthetic env encoding the theory model (pipeline v
 garagenet/sweep.py           arms x levels x seeds -> CSV + crossing detection
 garagenet/plots.py           crossing plot with CI bands
 garagenet/partnr_adapter.py  PARTNR backend skeleton (the real Phase-0 experiment)
+garagenet/mission.py         Phase-1: mission DAG (precedence + cross-agent externality)
+garagenet/allocators.py      Phase-1: team-uniform / greedy-local / joint-oracle / coupling-gated
+garagenet/allocator_sweep.py Phase-1 experiment: allocators x externality sweep
 ```
 
 Quickstart:

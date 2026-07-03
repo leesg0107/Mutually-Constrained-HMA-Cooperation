@@ -40,7 +40,7 @@ Quickstart:
 
 ```bash
 pip install -e ".[dev]"
-pytest                                      # 11 tests
+pytest                                      # 29 tests
 python -m garagenet.sweep --axis coupling   --out results/
 python -m garagenet.sweep --axis congestion --out results/
 python -m garagenet.plots results/sweep_coupling.csv results/sweep_congestion.csv \

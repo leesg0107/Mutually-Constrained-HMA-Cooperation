@@ -194,3 +194,82 @@ proves fragile to L2 scaling or backbone choice, that *itself* is the honest fin
 gains a genuine team-specific theoretical result the single-agent VOC lineage cannot produce, and
 Figure 2/Table-of-predicted-crossings becomes a validated theory→data bridge — elevating it from a
 strong empirical paper to a theory+measurement+system paper.
+
+---
+
+# v2 — FINAL SHAPE (2026-07-03): measurement + theory + per-agent allocator
+
+> Supersedes the measurement-first framing above as the working proposal. Incorporates
+> algorithmic direction C (`algorithmic-direction-C.md`), the team-VoC theory
+> (`theory-team-voc.md`), and the Phase-0/1 harness results (`garagenet/`). The v1 sections
+> above remain valid as the fallback shape if Phase-1 gains do not materialize on PARTNR.
+
+## Paper title (v2)
+
+**"Deliberate Where It Pays: Per-Agent Allocation of LLM Deliberation and Learned Policies in
+Heterogeneous Robot Teams"**
+
+*(alt: "Some Robots Think, Others Act: Coupling-Gated Coordination for Time-Critical
+Heterogeneous Teams")*
+
+## Main contributions (v2)
+
+1. **(Phenomenon)** The first systematic wall-clock characterization of LLM-deliberation vs.
+   learned-policy vs. hybrid coordination on identical heterogeneous-team tasks across a
+   reasoning-coupling axis — the **crossing curves**, with the full falsifiability battery
+   (congestion negative control, L2-capacity sweep, backbone-latency sweep).
+2. **(Theory)** Team value-of-computation: coupling ≡ the inter-agent deliberation externality.
+   Thm 1 (no externality ⇒ per-agent greedy optimal), Thm 2 (any externality ⇒ unbounded
+   decentralization regret; upstream agents systematically under-deliberate because the benefit
+   lands downstream), Corollary (**coupling gates decentralized-vs-joint metareasoning** — a new
+   lever; joint coordination itself costs latency and must be paid only when coupling demands it).
+3. **(System)** The GarageNet allocator: **different robots in one team simultaneously run
+   different coordination mechanisms** (immediate learned-policy execution ↔ LLM deliberation),
+   assigned per robot by local task coupling on the mission critical path. Evaluated as
+   gap-to-oracle with the allocator's own decision latency charged.
+4. **(Artifact)** The open measurement harness + allocator suite (PARTNR `Planner`-compatible
+   arms, 3-way timing ledger, coupling/congestion sweeps, crossing detector) — reproducibility,
+   not novelty.
+
+## The three claims already validated executably (mock/theory level)
+
+| Claim | Result (synthetic, mechanism-validation only) |
+|---|---|
+| Thm 2 greedy failure | greedy 314.8s vs joint 104.0s at high externality; failure mode = upstream skips deliberation, exactly as proved |
+| Corollary gate | matches joint (107.0 = 104.0 + 3.0 overhead) when escalation needed; matches greedy free (74.8s) when not |
+| A1 per-agent mixing | mixed assignment 57.2s vs best team-uniform 100.1s (–43%) on the pipeline mission; drones/scouts never wait on others' dialogue |
+
+Honest constraint discovered and kept: with purely independent parallel branches, makespan ties
+(the hardest branch dominates) — **A1's gain requires precedence structure** (easy branches feeding
+a downstream chain). PARTNR missions for Phase 1 must be selected/composed accordingly.
+
+## Five figures (v2)
+
+1. **Crossing curves** (Phase-0, real PARTNR): time-vs-coupling per arm, deliberation/execution
+   split, oracle envelope. *(instrument built & pipeline-validated)*
+2. **Falsifiability battery**: congestion no-crossing control + L2-capacity sweep + backbone-latency
+   sweep. *(protocol pre-registered in partnr-setup-checklist.md §3)*
+3. **Allocator comparison**: externality sweep (greedy blows up; gate escalates only when needed) +
+   per-agent vs team-uniform bars. *(prototype: results/allocators_demo.png)*
+4. **Wildfire timeline**: Gantt of per-agent modes — drones launch on policy at t=0 while the UGV
+   deliberates; makespan vs the all-deliberate and all-policy timelines.
+5. **Positioning matrix**: neighbors × {team? / cross-paradigm? / per-agent? / coupling-trigger? /
+   deploy-time? / time-metric?} — only GarageNet has every column; each column shown load-bearing
+   via an ablation.
+
+## Structure (v2)
+
+1. Introduction — the latency wall; the factory/wildfire intuition (some robots must think, others
+   must move NOW); contributions.
+2. Related Work — metareasoning/VoC; LLM-multi-robot; MARL/MAPF; adjustable autonomy; Raja-Lesser;
+   MARLIN; coalition formation (allocates tasks, not modes); iTax.
+3. Team Value-of-Computation — model, Thm 1/2, Corollary; coupling = measurable decentralization
+   regret.
+4. The GarageNet Allocator — coupling estimator, gated decentralized/joint metareasoner, mechanism
+   spectrum, async interface; decision latency accounting.
+5. Phase-0: the Crossing — measurement methodology + falsifiability battery on PARTNR.
+6. Phase-1: Per-Agent Allocation — allocator vs fixed modes vs team-uniform vs oracle on
+   precedence-structured missions.
+7. Discussion — when mixing pays (precedence) and when it can't (independent parallel); routing
+   overhead regime; discrete-vs-continuous (κ as future work if Phase-2 knob unbuilt).
+8. Conclusion & Limitations.

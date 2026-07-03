@@ -32,6 +32,8 @@ garagenet/partnr_adapter.py  PARTNR backend skeleton (the real Phase-0 experimen
 garagenet/mission.py         Phase-1: mission DAG (precedence + cross-agent externality)
 garagenet/allocators.py      Phase-1: team-uniform / greedy-local / joint-oracle / coupling-gated
 garagenet/allocator_sweep.py Phase-1 experiment: allocators x externality sweep
+garagenet/coupling_estimator.py  gating signal: rule / learned / LLM-probe / fallback gates
+garagenet/estimator_eval.py  gating ablation: accuracy x latency x mis-routing cost
 ```
 
 Quickstart:
